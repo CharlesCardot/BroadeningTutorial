@@ -242,7 +242,7 @@ plt.show()
 Okay, so now we know how to calculate the convolution of two functions within Python. How can we check our work? 
 
 ### Normalization
-In general a convolution $\[f \star g\](x)$ will have an area equal to the product of areas of the two functions being convolved ($f(x)$ and $g(x)$) ([proof](https://math.stackexchange.com/questions/3920639/is-convolution-area-preserving)). This is simple enough to check, so let's do so.
+In general a convolution $\[f \star g\](x)$ will have an area equal to the product of areas of the two functions being convolved ($f\(x\)$ and $g\(x\)$) ([proof](https://math.stackexchange.com/questions/3920639/is-convolution-area-preserving)). This is simple enough to check, so let's do so.
 
 ```
 fig, ax = plt.subplots(1,3, figsize=(12, 4))
