@@ -5,7 +5,7 @@ A short lesson on convolutions and broadening in Python
 
 In science, we often have to deal with distributions. Whether there is some a distribution of noise in our data, or some underlying physics influencing our measurements, we will always have to contend with these background processes. This is often discussed in terms of a convolutions, where two processes mix together at every point (usually one process you actually care about and another process that you couldn't care less about). 
 
-Mathematically a convolution is defined as $$[f \star g](x) = \int_{-\infty}^{\infty} f(\tau)g(x-\tau) d\tau$$
+Mathematically a convolution is defined as $$\[f \star g\](x) = \int_{-\infty}^{\infty} f(\tau)g(x-\tau) d\tau$$
 They are a well studied mathematical phenomena with many creative animations and explanations that can be found elsewhere ([link1](https://mathworld.wolfram.com/Convolution.html), [link2](https://www.youtube.com/watch?v=KuXjwB4LzSA&ab_channel=3Blue1Brown)). In the context of measured data, we usually use the word "broadening" instead of convolution, but they effectively mean the same thing. Usually our data is convolved with some other distribution which ends up broadening peaks and making any features fuzzier. Given this, being able to simulate broadening is critical for comparing theory to experiment, and also is generally helpful for understanding what is going on within our data. 
 
 In this post I will discuss how to implement broadening within Python for a few situations, as well as common mistakes that you will want to watch out for. All of the code I discuss is available **update this link** [here](https://github.com/CharlesCardot), and I *highly* recommend you take the chance to experiment with it before using it in your own projects (learn from my mistakes).
@@ -14,9 +14,12 @@ In this post I will discuss how to implement broadening within Python for a few 
 
 To begin let's start by getting comfortable with the tools that we are going to be working with. Below are a few of the distributions that I encounter most commonly in my research, but the lessons we develop with these examples will be entirely generalizable.
 
-- Gaussian: By far the most well known distribution in all of science thanks to the central limit theorem $$G(x, \sigma) = \frac{1}{\sigma \sqrt(2 \pi)} exp \left( -\frac{1}{2} \frac{(x-\mu)^2}{\sigma^2} \right)$$
-- Lorentzian: Sometimes refered to as a Cauchy distribution $$L(x, \Gamma) = \frac{1}{\pi} \frac{\Gamma/2}{(x-\mu)^2 - (\Gamma/2)^2} $$
-- Voigt: Convolution of a Gaussian and a Lorentzian (just to add a little spice) $$ V(x, \sigma, \Gamma) = \int_{-\infty}^{\infty} G(x', \sigma)L(x-x', \Gamma) dx' $$
+- Gaussian: By far the most well known distribution in all of science thanks to the central limit theorem 
+    - $G(x, \sigma) = \frac{1}{\sigma \sqrt(2 \pi)} exp \left( -\frac{1}{2} \frac{(x-\mu)^2}{\sigma^2} \right)$
+- Lorentzian: Sometimes refered to as a Cauchy distribution 
+    - $L(x, \Gamma) = \frac{1}{\pi} \frac{\Gamma/2}{(x-\mu)^2 - (\Gamma/2)^2}$
+- Voigt: Convolution of a Gaussian and a Lorentzian (just to add a little spice) 
+    - $V(x, \sigma, \Gamma) = \int_{-\infty}^{\infty} G(x', \sigma)L(x-x', \Gamma) dx'$
 
 ```
 import scipy
@@ -178,7 +181,7 @@ plt.show()
 
 Let's pause here to acknowledge two things.
 
-1. We managed to demonstrate that a Voigt function is indeed the convolution of a Lorentzian and a Gaussian. What's more is that it doesn't matter what order we perform the convolution in. Going Gaussian -> Lorentzian vs Lorentzian -> Gaussian gives the same curve. This is a general result, and it is also clear mathematically when we look at the formula for a convolution $$[f \star g](x) = \int_{-\infty}^{\infty} f(\tau)g(x-\tau) d\tau$$ and realize that if we swap our definitions of $f$ and $g$, and then perform u-substitution on the argument of g, we can return to the original equation ([proof](http://wittawat.com/posts/convolution_commutative.html)).
+1. We managed to demonstrate that a Voigt function is indeed the convolution of a Lorentzian and a Gaussian. What's more is that it doesn't matter what order we perform the convolution in. Going Gaussian -> Lorentzian vs Lorentzian -> Gaussian gives the same curve. This is a general result, and it is also clear mathematically when we look at the formula for a convolution $$\[f \star g\](x) = \int_{-\infty}^{\infty} f(\tau)g(x-\tau) d\tau$$ and realize that if we swap our definitions of $f$ and $g$, and then perform u-substitution on the argument of $g$, we can return to the original equation ([proof](http://wittawat.com/posts/convolution_commutative.html)).
 
 2. As with every coding task, there are many different ways to accomplish the same thing. However not all are necessarily equivalent. There is a nearly two order of magnitude difference between the double for loop and the numpy array methods, in terms of time saved. This becomes increasingly important when you start dealing with complicated spectra or functions that have a lot of data points.
 
@@ -239,7 +242,7 @@ plt.show()
 Okay, so now we know how to calculate the convolution of two functions within Python. How can we check our work? 
 
 ### Normalization
-In general a convolution $(f \star g)(x)$ will have an area equal to the product of areas of the two functions being convolved ($f(x)$ and $g(x))$ ([proof](https://math.stackexchange.com/questions/3920639/is-convolution-area-preserving)). This is simple enough to check, so let's do so.
+In general a convolution $\[f \star g\](x)$ will have an area equal to the product of areas of the two functions being convolved ($f(x)$ and $g(x)$) ([proof](https://math.stackexchange.com/questions/3920639/is-convolution-area-preserving)). This is simple enough to check, so let's do so.
 
 ```
 fig, ax = plt.subplots(1,3, figsize=(12, 4))
@@ -299,7 +302,7 @@ plt.show()
 
 Ah! This exercise was enlightening in multiple ways. Not only did it allow us to confirm that the product of the areas is indeed preserved through convolutions, but it showed us a shortcoming that was not necessarially tied the broadening method being used. A Lorentzian has especially long tails (compared to a Gaussian), and therefore still has non-negligible weight 5 units away from its peak. This can be quickly confirmed by plotting the above left subplot on a log axis (an exercise left to the reader).
 
-The formula we use for a Lorentzian (defined in utils) is normalized to 1 assuming that integration is performed from $-\infty$ to $\infty$, and therefore will integrate to less than 1 over the range $-10$ to $10$, which is exactly what we see. What's more, the area of the Voigt (0.93) is roughly equal to the area of the Lorentzian (0.93) times the area of the Gaussian (1.0), validating our earlier assertion. There is a slight disagreement on the order of $10^{-3}$ which is due to a combination of boundary effects from the numpy convolve function and the numerical integration.
+The formula we use for a Lorentzian (defined in utils) is normalized to 1 assuming that integration is performed from $- \infty$ to $\infty$, and therefore will integrate to less than 1 over the range $-10$ to $10$, which is exactly what we see. What's more, the area of the Voigt (0.93) is roughly equal to the area of the Lorentzian (0.93) times the area of the Gaussian (1.0), validating our earlier assertion. There is a slight disagreement on the order of $10^{-3}$ which is due to a combination of boundary effects from the numpy convolve function and the numerical integration.
 
 When we expand the x range to $-50$ to $50$ we see that the Lorentzian tails have much more space to die off before reaching the edge, leading to an area much closer to 1. We also see that reducing the Lorentzian FWHM (making it more narrow) has the same effect. **The takeaway from this is that one needs to be careful about the edge behavior of whatever functions are being broadened together.** If you have a very large x range relative to the spread of the broadening function, then you are most likely fine. However edge effects start to become prevalent when the x-range is comparable to the FWHM (or whatever width paramter you use).
 
