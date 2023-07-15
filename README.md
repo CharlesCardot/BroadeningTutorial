@@ -40,11 +40,8 @@ def Lorentzian(x, N, FWHM, mu):
 
 def Voigt(x, N, G_FWHM, L_FWHM, mu):
     sigma = G_FWHM/(2*np.sqrt(2*np.log(2)))
-    L_HWHM = L_FWHM/2 # Scipy's voigt_profile expects Half Width at Half Max as the Lorentzian width parameter
+    L_HWHM = L_FWHM/2 # Scipy's voigt_profile expects Half Width at Half Max
     return N * scipy.special.voigt_profile(x-mu, sigma, L_HWHM)
-```
-
-```
 
 # FWHM = Full Width at Half Maximum, basically how wide (or fat) the peak is
 # N = Multiplicative factor, N=1 means the normalized curve is multiplied everywhere by 1
