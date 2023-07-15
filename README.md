@@ -7,7 +7,7 @@ A short lesson on convolutions and broadening in Python
 
 In science, we often have to deal with distributions. Whether there is some a distribution of noise in our data, or some underlying physics influencing our measurements, we will always have to contend with these background processes. This is often discussed in terms of a convolutions, where two processes mix together at every point (usually one process you actually care about and another process that you couldn't care less about).
 
-Mathematically a convolution is defined as $$ \[f \star g\](x) = \int_{-\infty}^{\infty} f(\tau)g(x-\tau) d\tau $$.
+Mathematically a convolution is defined as $$\[f \star g\](x) = \int_{-\infty}^{\infty} f(\tau)g(x-\tau) d\tau$$.
 These convolutions are a well studied functions, and if you want to explore them in more detail there are many creative animations and explanations that can be found on the internet ([link1](https://mathworld.wolfram.com/Convolution.html), [link2](https://www.youtube.com/watch?v=KuXjwB4LzSA&ab_channel=3Blue1Brown)). In the context of measured data, we usually use the word "broadening" instead of convolution, but they effectively mean the same thing. Usually our data is convolved with some other distribution which ends up broadening peaks and making any features fuzzier. Given this, being able to simulate broadening is critical for comparing calculated values to experiment, and also is generally helpful for understanding what is going on within our data. 
 
 This tutorial is a guide on how to implement broadening within Python for a few situations, as well as common mistakes that you will want to watch out for. I *highly* recommend you take the time to experiment with the code before using it in your own projects (learn from my mistakes).
